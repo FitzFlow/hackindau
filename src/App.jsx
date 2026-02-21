@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import './App.css'
+import alephiumLogo from './img/alephiumLogo.png'
+import alephiumArt from './img/alephium.jpg'
 
 const ALEPHIUM_API = 'https://node.mainnet.alephium.org'
 const REFRESH_INTERVAL = 15000 //15 seconds
@@ -97,14 +99,35 @@ function App() {
     setChainDetails(null)
 
     try {
-      // Fetch detailed info for this specific chain
-      const response = await fetch(
+      const chainInfoResponse = await fetch(
         `${ALEPHIUM_API}/blockflow/chain-info?fromGroup=${chain.fromGroup}&toGroup=${chain.toGroup}`
       )
 
-      if (response.ok) {
-        const data = await response.json()
-        setChainDetails(data)
+      if (chainInfoResponse.ok) {
+        const chainInfo = await chainInfoResponse.json()
+        const hashResponse = await fetch(
+          `${ALEPHIUM_API}/blockflow/hashes?fromGroup=${chain.fromGroup}&toGroup=${chain.toGroup}&height=${chainInfo.currentHeight}`
+        )
+
+        let blockDetails = null
+        if (hashResponse.ok) {
+          const hashData = await hashResponse.json()
+          if (hashData.headers && hashData.headers.length > 0) {
+            const blockHash = hashData.headers[0]
+            const blockResponse = await fetch(
+              `${ALEPHIUM_API}/blockflow/blocks/${blockHash}`
+            )
+
+            if (blockResponse.ok) {
+              blockDetails = await blockResponse.json()
+            }
+          }
+        }
+
+        setChainDetails({
+          ...chainInfo,
+          blockDetails
+        })
       }
     } catch (err) {
       console.error('Error fetching chain details:', err)
@@ -119,8 +142,20 @@ function App() {
   if (loading) {
     return (
       <div className="app">
-        <h1>Alephium BlockFlow Visualizer</h1>
-        <div className="loading">Loading blockchain data...</div>
+        <header>
+          <h1>Alephium BlockFlow Visualizer</h1>
+          <p className="subtitle">Real-time visualization of 16 parallel chains</p>
+        </header>
+        <div className="blockflow-grid">
+          {Array.from({ length: 16 }).map((_, index) => (
+            <div key={`skeleton-${index}`} className="chain-card skeleton-card">
+              <div className="skeleton-header" />
+              <div className="skeleton-row" />
+              <div className="skeleton-row" />
+              <div className="skeleton-row" />
+            </div>
+          ))}
+        </div>
       </div>
     )
   }
@@ -128,7 +163,10 @@ function App() {
   return (
     <div className="app">
       <header>
-        <h1>Alephium BlockFlow Visualizer</h1>
+        <div className="brand-row">
+          <img className="brand-logo" src={alephiumLogo} alt="Alephium logo" />
+          <h1>Alephium BlockFlow Visualizer</h1>
+        </div>
         <p className="subtitle">Real-time visualization of 16 parallel chains</p>
         <div className="header-info">
           {lastUpdate && (
@@ -234,19 +272,56 @@ function App() {
               </div>
 
               {chainDetails ? (
-                <div className="detail-section">
-                  <h3>Chain Details</h3>
-                  <div className="detail-row">
-                    <span className="detail-label">Current Height:</span>
-                    <span className="detail-value">{chainDetails.currentHeight?.toLocaleString()}</span>
-                  </div>
-                  {chainDetails.currentHashRate && (
+                <>
+                  <div className="detail-section">
+                    <h3>Chain Details</h3>
                     <div className="detail-row">
-                      <span className="detail-label">Hash Rate:</span>
-                      <span className="detail-value">{chainDetails.currentHashRate}</span>
+                      <span className="detail-label">Current Height:</span>
+                      <span className="detail-value">{chainDetails.currentHeight?.toLocaleString()}</span>
+                    </div>
+                    {chainDetails.currentHashRate && (
+                      <div className="detail-row">
+                        <span className="detail-label">Hash Rate:</span>
+                        <span className="detail-value">{chainDetails.currentHashRate}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {chainDetails.blockDetails && (
+                    <div className="detail-section">
+                      <h3>Mining Difficulty</h3>
+                      <div className="detail-row">
+                        <span className="detail-label">Target:</span>
+                        <span className="detail-value difficulty-value">
+                          {chainDetails.blockDetails.target}
+                        </span>
+                      </div>
+                      <div className="detail-row">
+                        <span className="detail-label">Block Hash:</span>
+                        <span className="detail-value hash-value">
+                          {chainDetails.blockDetails.hash.substring(0, 16)}...
+                        </span>
+                      </div>
+                      <div className="detail-row">
+                        <span className="detail-label">Timestamp:</span>
+                        <span className="detail-value">
+                          {new Date(chainDetails.blockDetails.timestamp).toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="detail-row">
+                        <span className="detail-label">Transactions:</span>
+                        <span className="detail-value">
+                          {chainDetails.blockDetails.transactions?.length || 0}
+                        </span>
+                      </div>
+                      <div className="difficulty-info">
+                        <small>
+                          💡 The target value represents mining difficulty. Lower values = harder to mine = more miners on the network.
+                        </small>
+                      </div>
                     </div>
                   )}
-                </div>
+                </>
               ) : (
                 <div className="detail-section">
                   <p>Loading chain details...</p>
@@ -256,8 +331,8 @@ function App() {
               <div className="detail-section">
                 <h3>About This Chain</h3>
                 <p className="detail-description">
-                  This chain routes blocks from group {selectedChain.fromGroup} to group {selectedChain.toGroup}. 
-                  In Alephium's BlockFlow architecture, each of the 16 chains handles a specific route 
+                  This chain routes blocks from group {selectedChain.fromGroup} to group {selectedChain.toGroup}.
+                  In Alephium's BlockFlow architecture, each of the 16 chains handles a specific route
                   between the 4 groups, enabling parallel transaction processing.
                 </p>
               </div>

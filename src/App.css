@@ -1,13 +1,42 @@
 .app {
   min-height: 100vh;
   padding: 2rem;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background:
+    linear-gradient(135deg, rgba(7, 10, 20, 0.92) 0%, rgba(11, 15, 31, 0.88) 45%, rgba(7, 10, 20, 0.92) 100%),
+    url('./img/alephium.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
   color: #ffffff;
 }
 
 header {
   text-align: center;
   margin-bottom: 3rem;
+}
+
+.brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.brand-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 18px rgba(123, 92, 255, 0.35));
+}
+
+.brand-art {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 77, 109, 0.5);
+  box-shadow: 0 6px 18px rgba(255, 77, 109, 0.25);
 }
 
 .header-info {
@@ -22,19 +51,19 @@ header {
 h1 {
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #7b5cff 0%, #ff4d6d 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .subtitle {
-  color: #a0aec0;
+  color: #b7c0d1;
   font-size: 1.1rem;
 }
 
 .last-update {
-  color: #4fd1c5;
+  color: #7b5cff;
   font-size: 0.9rem;
   margin: 0;
 }
@@ -48,7 +77,7 @@ h1 {
 
 .progress-ring {
   transform: rotate(-90deg);
-  filter: drop-shadow(0 0 10px rgba(79, 209, 197, 0.3));
+  filter: drop-shadow(0 0 10px rgba(123, 92, 255, 0.35));
 }
 
 .progress-ring-circle-bg {
@@ -59,14 +88,14 @@ h1 {
 
 .progress-ring-circle {
   fill: none;
-  stroke: #4fd1c5;
+  stroke: #7b5cff;
   stroke-width: 4;
   stroke-linecap: round;
   transition: stroke-dashoffset 1s linear;
 }
 
 .progress-text {
-  fill: #4fd1c5;
+  fill: #7b5cff;
   font-size: 14px;
   font-weight: 700;
   transform: rotate(90deg);
@@ -77,7 +106,59 @@ h1 {
   text-align: center;
   font-size: 1.5rem;
   margin-top: 5rem;
-  color: #4fd1c5;
+  color: #7b5cff;
+}
+
+/* Skeleton Loading */
+.skeleton-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150px;
+  width: 150px;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+.skeleton-header {
+  height: 20px;
+  width: 70%;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  margin: 0 auto 1.25rem auto;
+}
+
+.skeleton-row {
+  height: 14px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  margin-bottom: 0.8rem;
+}
+
+.skeleton-row:last-child {
+  margin-bottom: 0;
+  width: 80%;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(400%);
+  }
 }
 
 .error {
@@ -99,7 +180,7 @@ h1 {
 
 .chain-card {
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(123, 92, 255, 0.25);
   border-radius: 12px;
   padding: 1.5rem;
   transition: all 0.3s ease;
@@ -108,18 +189,18 @@ h1 {
 
 .chain-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-  border-color: rgba(102, 126, 234, 0.5);
+  box-shadow: 0 10px 30px rgba(123, 92, 255, 0.35);
+  border-color: rgba(255, 77, 109, 0.6);
 }
 
 .chain-header {
   font-size: 1.2rem;
   font-weight: bold;
   margin-bottom: 1rem;
-  color: #4fd1c5;
+  color: #ff4d6d;
   text-align: center;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid rgba(79, 209, 197, 0.3);
+  border-bottom: 2px solid rgba(255, 77, 109, 0.35);
 }
 
 .chain-info {
@@ -135,7 +216,7 @@ h1 {
 }
 
 .label {
-  color: #a0aec0;
+  color: #b7c0d1;
   font-size: 0.9rem;
 }
 
@@ -148,7 +229,7 @@ h1 {
 footer {
   text-align: center;
   margin-top: 3rem;
-  color: #718096;
+  color: #7a859c;
   font-size: 0.9rem;
 }
 
@@ -202,8 +283,8 @@ footer {
 }
 
 .modal-content {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  border: 2px solid rgba(102, 126, 234, 0.5);
+  background: linear-gradient(135deg, #0f1224 0%, #151a33 100%);
+  border: 2px solid rgba(123, 92, 255, 0.55);
   border-radius: 16px;
   padding: 2rem;
   max-width: 600px;
@@ -253,11 +334,11 @@ footer {
 }
 
 .modal-content h2 {
-  color: #4fd1c5;
+  color: #ff4d6d;
   font-size: 2rem;
   margin-bottom: 1.5rem;
   text-align: center;
-  background: linear-gradient(135deg, #4fd1c5 0%, #667eea 100%);
+  background: linear-gradient(135deg, #ff4d6d 0%, #7b5cff 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -277,10 +358,10 @@ footer {
 }
 
 .detail-section h3 {
-  color: #667eea;
+  color: #7b5cff;
   font-size: 1.3rem;
   margin-bottom: 1rem;
-  border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+  border-bottom: 2px solid rgba(123, 92, 255, 0.35);
   padding-bottom: 0.5rem;
 }
 
@@ -297,7 +378,7 @@ footer {
 }
 
 .detail-label {
-  color: #a0aec0;
+  color: #b7c0d1;
   font-size: 1rem;
   font-weight: 500;
 }
@@ -313,6 +394,32 @@ footer {
   line-height: 1.6;
   font-size: 0.95rem;
   margin: 0;
+}
+
+.difficulty-value {
+  font-family: 'Courier New', monospace;
+  color: #ffb703;
+  font-size: 1rem;
+}
+
+.hash-value {
+  font-family: 'Courier New', monospace;
+  color: #7b5cff;
+  font-size: 0.9rem;
+}
+
+.difficulty-info {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(123, 92, 255, 0.12);
+  border-left: 3px solid #7b5cff;
+  border-radius: 4px;
+}
+
+.difficulty-info small {
+  color: #cbd5e0;
+  line-height: 1.5;
+  font-size: 0.85rem;
 }
 
 /* Modal responsive */
