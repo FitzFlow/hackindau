@@ -14,6 +14,9 @@ function App() {
   const [selectedChain, setSelectedChain] = useState(null)
   const [chainDetails, setChainDetails] = useState(null)
   const [timeLeft, setTimeLeft] = useState(REFRESH_INTERVAL / 1000)
+  const [newBlocks, setNewBlocks] = useState(new Set())
+  const [previousHeights, setPreviousHeights] = useState({})
+  const [blockTimes, setBlockTimes] = useState([])
 
   const fetchBlockflowData = async () => {
     try {
@@ -86,7 +89,35 @@ function App() {
         }
       }
 
-      setChainData(processedData)
+      setChainData((prevData) => {
+        const newBlocksSet = new Set()
+        const newBlockTimes = []
+        
+        processedData.forEach((newChain, index) => {
+          const oldChain = prevData[index]
+          if (oldChain && newChain.height > oldChain.height) {
+            newBlocksSet.add(newChain.chainIndex)
+            
+            const timeDiff = (newChain.timestamp - oldChain.timestamp) / 1000 // in seconds
+            const blockDiff = newChain.height - oldChain.height
+            if (blockDiff > 0 && timeDiff > 0) {
+              const avgBlockTime = timeDiff / blockDiff
+              newBlockTimes.push(avgBlockTime)
+            }
+          }
+        })
+        
+        if (newBlocksSet.size > 0) {
+          setNewBlocks(newBlocksSet)
+          setTimeout(() => setNewBlocks(new Set()), 2000)
+        }
+        
+        if (newBlockTimes.length > 0) {
+          setBlockTimes(prev => [...prev, ...newBlockTimes].slice(-50))
+        }
+        
+        return processedData
+      })
       setLastUpdate(new Date())
       setLoading(false)
     } catch (err) {
@@ -167,6 +198,10 @@ function App() {
   const totalBlocks = chainData.reduce((sum, chain) => sum + (chain.height || 0), 0)
   const totalTxs = chainData.reduce((sum, chain) => sum + (chain.txCount || 0), 0)
 
+  const avgBlockTime = blockTimes.length > 0 
+    ? (blockTimes.reduce((sum, time) => sum + time, 0) / blockTimes.length).toFixed(1)
+    : null
+
   const heights = chainData.map(chain => chain.height || 0)
   const minHeight = Math.min(...heights)
   const maxHeight = Math.max(...heights)
@@ -218,6 +253,18 @@ function App() {
             <span className="stat-label">Total tx</span>
             <span className="stat-value">{totalTxs.toLocaleString()}</span>
           </div>
+          {avgBlockTime && (
+            <div className="stat-badge blocktime-badge">
+              <span className="stat-label">Avg Block Time</span>
+              <span className="stat-value">{avgBlockTime}s</span>
+              <span className="stat-sublabel">vs BTC ~600s, ETH ~12s</span>
+            </div>
+          )}
+          <div className="stat-badge energy-badge">
+            <span className="stat-label">Consensus</span>
+            <span className="stat-value">Proof of Less Work</span>
+            <span className="stat-sublabel">Energy-efficient mining</span>
+          </div>
           {lastUpdate && (
             <p className="last-update">
               Last update: {lastUpdate.toLocaleTimeString()}
@@ -264,11 +311,12 @@ function App() {
         {chainData.map((chain) => {
           const heatmapColor = getHeatmapColor(chain.height)
           const heightRatio = (chain.height - minHeight) / heightRange
+          const isNewBlock = newBlocks.has(chain.chainIndex)
           
           return (
             <div
               key={chain.chainIndex}
-              className="chain-card"
+              className={`chain-card ${isNewBlock ? 'new-block' : ''}`}
               onClick={() => handleChainClick(chain)}
               style={{ 
                 cursor: 'pointer',
@@ -277,6 +325,13 @@ function App() {
                 boxShadow: `0 4px 20px ${heatmapColor}20`
               }}
             >
+              {isNewBlock && (
+                <>
+                  <div className="particle particle-1"></div>
+                  <div className="particle particle-2"></div>
+                  <div className="particle particle-3"></div>
+                </>
+              )}
               <div className="chain-header" style={{ borderBottomColor: `${heatmapColor}50` }}>
                 Chain {chain.fromGroup} → {chain.toGroup}
               </div>

@@ -73,6 +73,39 @@ header {
   color: #ff4d6d;
 }
 
+.stat-sublabel {
+  font-size: 0.7rem;
+  color: #7a859c;
+  font-style: italic;
+  margin-top: 0.2rem;
+}
+
+.energy-badge {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(123, 92, 255, 0.1) 100%);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.energy-badge .stat-value {
+  color: #22c55e;
+}
+
+.energy-badge .stat-label {
+  color: #86efac;
+}
+
+.blocktime-badge {
+  background: linear-gradient(135deg, rgba(255, 183, 3, 0.15) 0%, rgba(255, 77, 109, 0.1) 100%);
+  border: 1px solid rgba(255, 183, 3, 0.3);
+}
+
+.blocktime-badge .stat-value {
+  color: #ffb703;
+}
+
+.blocktime-badge .stat-label {
+  color: #fcd34d;
+}
+
 h1 {
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
@@ -210,12 +243,110 @@ h1 {
   padding: 1.5rem;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
 }
 
 .chain-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 30px rgba(123, 92, 255, 0.35);
   border-color: rgba(255, 77, 109, 0.6);
+}
+
+/* New block animation */
+.chain-card.new-block {
+  animation: blockPulse 0.5s ease-out;
+}
+
+@keyframes blockPulse {
+  0%, 100% {
+    box-shadow: 0 4px 20px rgba(123, 92, 255, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(123, 92, 255, 0.5);
+    transform: scale(1.02);
+  }
+}
+
+/* +1 animation */
+.plus-one {
+  position: absolute;
+  top: 20%;
+  right: 10%;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #7b5cff;
+  text-shadow: 0 0 10px rgba(123, 92, 255, 0.5);
+  animation: plusOneFloat 1.2s ease-out forwards;
+  z-index: 10;
+  pointer-events: none;
+}
+
+@keyframes plusOneFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.8);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.6);
+  }
+}
+
+/* Particle animations */
+.particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(123, 92, 255, 0.6);
+  box-shadow: 0 0 8px rgba(123, 92, 255, 0.4);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.particle-1 {
+  bottom: 15%;
+  left: 30%;
+  animation: particleFloat 1.5s ease-out forwards;
+}
+
+.particle-2 {
+  bottom: 15%;
+  left: 50%;
+  animation: particleFloat 1.5s 0.1s ease-out forwards;
+}
+
+.particle-3 {
+  bottom: 15%;
+  left: 70%;
+  animation: particleFloat 1.5s 0.2s ease-out forwards;
+}
+
+.particle-4 {
+  display: none;
+}
+
+.particle-5 {
+  display: none;
+}
+
+@keyframes particleFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-80px);
+  }
 }
 
 .chain-header {
