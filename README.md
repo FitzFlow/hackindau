@@ -15,6 +15,11 @@ Click any chain to see detailed information including:
 - Block hash and timestamp
 - Last block transactions with hash and amount
 
+Header metrics include:
+- Network TPS (estimated from recent blocks)
+- Average block time (based on real block timestamps)
+- Consensus summary (PoLW)
+
 Data is fetched from the Alephium mainnet API and refreshes every 15 seconds.
 
 ## How to run
@@ -64,6 +69,10 @@ npm run preview
 - ✅ Mining difficulty display
 - ✅ Transaction list with hash and amount
 - ✅ Visual heatmap based on block height
+- ✅ New block animation pulse
+- ✅ Network TPS (estimated from recent blocks)
+- ✅ Average block time metric
+- ✅ PoLW consensus highlight
 - ✅ Total blocks and transactions metrics
 - ✅ Skeleton loading states
 - ✅ Responsive design (desktop, tablet, mobile)

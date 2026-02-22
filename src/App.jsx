@@ -17,6 +17,7 @@ function App() {
   const [newBlocks, setNewBlocks] = useState(new Set())
   const [previousHeights, setPreviousHeights] = useState({})
   const [blockTimes, setBlockTimes] = useState([])
+  const [tpsHistory, setTpsHistory] = useState([])
 
   const fetchBlockflowData = async () => {
     try {
@@ -92,30 +93,41 @@ function App() {
       setChainData((prevData) => {
         const newBlocksSet = new Set()
         const newBlockTimes = []
-        
+        const newTpsSamples = []
+
         processedData.forEach((newChain, index) => {
           const oldChain = prevData[index]
           if (oldChain && newChain.height > oldChain.height) {
             newBlocksSet.add(newChain.chainIndex)
-            
-            const timeDiff = (newChain.timestamp - oldChain.timestamp) / 1000 // in seconds
+
+            const timeDiff = (newChain.timestamp - oldChain.timestamp) / 1000
             const blockDiff = newChain.height - oldChain.height
             if (blockDiff > 0 && timeDiff > 0) {
               const avgBlockTime = timeDiff / blockDiff
               newBlockTimes.push(avgBlockTime)
+
+              const tps = newChain.txCount / avgBlockTime
+              if (Number.isFinite(tps) && tps >= 0) {
+                newTpsSamples.push(tps)
+              }
             }
           }
         })
-        
+
         if (newBlocksSet.size > 0) {
           setNewBlocks(newBlocksSet)
           setTimeout(() => setNewBlocks(new Set()), 2000)
         }
-        
+
         if (newBlockTimes.length > 0) {
-          setBlockTimes(prev => [...prev, ...newBlockTimes].slice(-50))
+          setBlockTimes((prev) => [...prev, ...newBlockTimes].slice(-50))
         }
-        
+
+        if (newTpsSamples.length > 0) {
+          const totalTps = newTpsSamples.reduce((sum, value) => sum + value, 0)
+          setTpsHistory((prev) => [...prev, totalTps].slice(-30))
+        }
+
         return processedData
       })
       setLastUpdate(new Date())
@@ -202,6 +214,10 @@ function App() {
     ? (blockTimes.reduce((sum, time) => sum + time, 0) / blockTimes.length).toFixed(1)
     : null
 
+  const avgTps = tpsHistory.length > 0
+    ? (tpsHistory.reduce((sum, tps) => sum + tps, 0) / tpsHistory.length).toFixed(2)
+    : null
+
   const heights = chainData.map(chain => chain.height || 0)
   const minHeight = Math.min(...heights)
   const maxHeight = Math.max(...heights)
@@ -253,6 +269,13 @@ function App() {
             <span className="stat-label">Total tx</span>
             <span className="stat-value">{totalTxs.toLocaleString()}</span>
           </div>
+          {avgTps && (
+            <div className="stat-badge tps-badge">
+              <span className="stat-label">Network TPS</span>
+              <span className="stat-value">{avgTps}</span>
+              <span className="stat-sublabel">Approx from recent blocks</span>
+            </div>
+          )}
           {avgBlockTime && (
             <div className="stat-badge blocktime-badge">
               <span className="stat-label">Avg Block Time</span>
